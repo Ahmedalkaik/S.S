@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(120deg, #ffb6c1, #4f726f); /* دمج الوردي الفاتح مع الأخضر المينت */
+            color: white;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 3rem;
+        }
+
+        .question-container {
+            width: 80%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #6ba89f;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #558880;
+            transform: scale(1.1);
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>وريني شطارتك بقى </h1>
+
+    <div id="question-container" class="question-container"></div>
+
+    <button onclick="nextQuestion()">Next</button>
+
+    <div class="message" id="result-message"></div>
+
+    <script>
+        const questions = [
+            {
+                question: "أيهم أكبر، 1/4 أم 1/8؟",
+                options: ["1/4", "1/8"],
+                correct: 0
+            },
+            {
+                question: "آخر مرة اتقابلنا إمتى بسرعة مفيش وقت!",
+                options: ["2/3", "3/2", "9/10", "10/9"],
+                correct: 2
+            },
+            {
+                question: "who is my favorite person ever?",
+                options: ["سما", "سمسومة", "سمسومتي", "مراتي"],
+                correct: null // أي إجابة تعتبر صحيحة
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let score = 0;
+
+        function displayQuestion(index) {
+            const questionContainer = document.getElementById('question-container');
+            const question = questions[index];
+
+            let questionHTML = `<p>${question.question}</p>`;
+            question.options.forEach((option, i) => {
+                questionHTML += `
+                    <input type="radio" name="question${index}" value="${i}" id="option${index}-${i}">
+                    <label for="option${index}-${i}">${option}</label><br>`;
+            });
+
+            questionContainer.innerHTML = questionHTML;
+        }
+
+        function nextQuestion() {
+            const question = questions[currentQuestionIndex];
+            const selectedOption = document.querySelector(`input[name="question${currentQuestionIndex}"]:checked`);
+
+            if (selectedOption) {
+                const selectedAnswer = parseInt(selectedOption.value);
+                userAnswers.push(selectedAnswer);
+
+                // إذا كانت الإجابة على السؤال الثالث، أي إجابة صحيحة
+                if (question.correct === null || selectedAnswer === question.correct) {
+                    score++;
+                }
+
+                // الانتقال إلى السؤال التالي
+                currentQuestionIndex++;
+
+                if (currentQuestionIndex < questions.length) {
+                    displayQuestion(currentQuestionIndex);
+                } else {
+                    submitQuiz(); // إذا انتهت الأسئلة، نقوم بفحص النتيجة
+                }
+            } else {
+                alert("الرجاء الإجابة على السؤال قبل الانتقال إلى التالي!");
+            }
+        }
+
+        function submitQuiz() {
+            const resultMessage = document.getElementById('result-message');
+
+            if (score === questions.length) {
+                resultMessage.innerText = "شطووووورة استعدي بقى ";
+                resultMessage.style.color = "White";
+                resultMessage.style.display = "block";
+
+                setTimeout(() => {
+                    window.location.href = 'message.html'; // الانتقال للصفحة الثالثة
+                }, 2000);
+            } else {
+                resultMessage.innerText = `لقد أجبت ${score} من ${questions.length} بشكل صحيح. حاول مرة أخرى!`;
+                resultMessage.style.color = "red";
+                resultMessage.style.display = "block";
+
+                // إعادة تعيين الاختبار
+                currentQuestionIndex = 0;
+                score = 0;
+                userAnswers = [];
+                displayQuestion(currentQuestionIndex);
+            }
+        }
+
+        // عرض أول سؤال عند تحميل الصفحة
+        displayQuestion(currentQuestionIndex);
+    </script>
+</body>
+</html>
